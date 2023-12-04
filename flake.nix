@@ -3,32 +3,20 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-
-        buildInputs = with pkgs;[
-          swift
-          swiftpm
-          swiftPackages.Foundation
-          darwin.apple_sdk.frameworks.AppKit
-        ];
-
-
       in
       {
-        #     packages.default = pkgs.swift.stdenv.buildEnv {
-        # 	name="swift shell";
-        # 	paths = buildInputs; 
-        # };
+        devShells.default = pkgs.mkShell.override { stdenv = pkgs.swift.stdenv; } {
+          buildInputs = with pkgs;[
+            swift
+            swiftpm
+            swiftPackages.Foundation
+            darwin.apple_sdk.frameworks.AppKit
+          ];
 
-        packages.default = pkgs.stdenv.mkDerivation rec {
-          name = "env";
-          inherit buildInputs;
-          #env = pkgs.buildEnv { name = name; paths = buildInputs; };
-        };
-
-        devShells.default = pkgs.mkShell {
-          inherit buildInputs;
-
+          # https://github.com/NixOS/nix/issues/6677
+          shellHook = ''
+            export PS1='\n\[\033[1;32m\][nix-shell:\w]\$\[\033[0m\] '
+          '';
         };
       });
-
 }
