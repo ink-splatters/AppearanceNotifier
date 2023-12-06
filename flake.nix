@@ -11,17 +11,12 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-
-        mkShell = devenv.modules.mkNakedShell.override {
-          stdenv = pkgs.swift.stdenv;
-        };
-
       in
       {
         devShells.default = devenv.lib.mkShell {
           inherit inputs pkgs;
           modules = [
-            ({ pkgs, config, ... }: {
+            {
               languages.nix.enable = true;
 
               pre-commit.hooks = {
@@ -41,7 +36,7 @@
                 swiftPackages.Foundation
                 darwin.apple_sdk.frameworks.AppKit
               ];
-            })
+            }
           ];
 
         };
